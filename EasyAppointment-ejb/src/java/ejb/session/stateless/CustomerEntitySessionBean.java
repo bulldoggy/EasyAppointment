@@ -66,6 +66,9 @@ public class CustomerEntitySessionBean implements CustomerEntitySessionBeanRemot
     public CustomerEntity customerLogin(String emailAddress, String password) throws InvalidLoginCredentialException {
         try {
             CustomerEntity customerEntity = retrieveCustomerByEmail(emailAddress);
+            if (customerEntity == null) {
+                System.out.println("customerEntity is null");
+            }
             if(customerEntity.getPassword().equals(password)) {              
                 return customerEntity;
             } else {
