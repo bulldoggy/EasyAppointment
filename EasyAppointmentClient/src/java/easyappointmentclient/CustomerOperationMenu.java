@@ -25,6 +25,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import util.enumeration.StatusEnum;
+import util.exception.AppointmentNotFoundException;
 import util.exception.ServiceProviderNotFoundException;
 import util.helper.DateUtil;
 
@@ -275,7 +276,13 @@ public class CustomerOperationMenu {
         if (appointmentNo.equals("0")) {
             return;
         }
-        AppointmentEntity appointment = appointmentEntitySessionBeanRemote.retrieveAppointmentByAppointmentNo(appointmentNo);
+        AppointmentEntity appointment;
+        try {
+            appointment = appointmentEntitySessionBeanRemote.retrieveAppointmentByAppointmentNo(appointmentNo);
+        } catch (AppointmentNotFoundException ex) {
+            System.out.println("Appointment with appointment number " + appointmentNo + " not found.");
+            return;
+        }
         // remove appointment from db
         appointmentEntitySessionBeanRemote.deleteAppointment(appointment.getAppointmentId());
         // remove appointment from customer
