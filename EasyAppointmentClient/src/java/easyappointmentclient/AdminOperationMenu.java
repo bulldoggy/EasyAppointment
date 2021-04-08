@@ -29,6 +29,7 @@ import util.exception.ServiceProviderNotFoundException;
 import util.exception.ServiceProviderApproveException;
 import util.exception.ServiceProviderBlockedException;
 import static util.helper.StringUtil.*;
+import static util.helper.DateUtil.*;
 import util.thread.RunnableNotification;
 
 /**
@@ -159,17 +160,9 @@ public class AdminOperationMenu {
                     break;
                 }
                 serviceProviderEntity = serviceProviderEntitySessionBeanRemote.retrieveServiceProviderByUniqueIdNumber(serviceProviderId);
-                List<AppointmentEntity> appointmentArray = serviceProviderEntity.getAppointmentEntity();
+                List<AppointmentEntity> appointmentList = serviceProviderEntity.getAppointmentEntity();
                 System.out.println("Appointments: \n");
-                System.out.println("Name        | Business category | Date | Time | Appointment No.");
-                //iterate through service provider appointments
-                for (AppointmentEntity appointment : appointmentArray) {
-                    System.out.println(serviceProviderEntity.getName() + " | " + 
-                    serviceProviderEntity.getBusinessCategory() + " | " + 
-                    appointment.getAppointmentDate() + 
-                    appointment.getAppointmentTime() + 
-                    appointment.getAppointmentId());
-                }
+                serviceProviderAppointmentTableFormat(appointmentList);
                 System.out.println("Enter 0 to go back to the previous menu\n");
             } catch (ServiceProviderNotFoundException ex) {
                 System.out.println(ex.getMessage());
@@ -268,7 +261,7 @@ public class AdminOperationMenu {
         while (true) {
             try {
                 System.out.println("Enter 0 to go back to the previous menu.");
-                System.out.print("Type in the business category to remove> ");
+                System.out.print("Type in the business category to add> ");
                 if (sc.hasNextInt()) {
                     int response = sc.nextInt();
                     if (response == 0) {
