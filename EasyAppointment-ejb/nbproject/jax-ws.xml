@@ -4,6 +4,9 @@
     <service name="ServiceProviderEntityWebService">
       <implementation-class>ejb.session.ws.ServiceProviderEntityWebService</implementation-class>
     </service>
+    <service name="CustomerEntityWebService">
+      <implementation-class>ejb.session.ws.CustomerEntityWebService</implementation-class>
+    </service>
   </services>
   <clients/>
   <jsr109>false</jsr109>
