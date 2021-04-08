@@ -5,8 +5,10 @@
  */
 package util.helper;
 
+import entity.AppointmentEntity;
 import entity.ServiceProviderEntity;
 import java.util.List;
+import static util.helper.DateUtil.*;
 
 /**
  *
@@ -20,6 +22,30 @@ public class StringUtil {
     //helper method to pad strings. Pads the output with spaces to align with headers.
     public static String padRight(String s, int n) {
         return String.format("%-" + n + "s", s);
+    }
+    
+    public static void customerAppointmentTableFormat(List<AppointmentEntity> list) {
+        String nameHeader = "Name";
+        String businessCategoryHeader = "Business Category";
+        String timeHeader = "Time";
+        String appointmentNumberHeader = "Appointment No.";
+    }
+    
+    public static void serviceProviderAppointmentTableFormat(List<AppointmentEntity> list) {
+        String nameHeader = "Name";
+        String dateHeader = "Date";
+        String timeHeader = "Time";
+        String appointmentNumberHeader = "Appointment No.";
+        int longestName = 0;
+        for (AppointmentEntity appointment : list) {
+            if ((appointment.getCustomerEntity().getFirstName() + " " + appointment.getCustomerEntity().getLastName()).length() > longestName) {
+                longestName = (appointment.getCustomerEntity().getFirstName() + " " + appointment.getCustomerEntity().getLastName()).length();
+            }
+        }
+        System.out.println(padRight(nameHeader,longestName) +  " | " + padRight(dateHeader, 10) + " | " + padRight(timeHeader, 5) + " | " + appointmentNumberHeader);
+        for (AppointmentEntity appointment : list) {
+            System.out.println(padRight((appointment.getCustomerEntity().getFirstName() + " " + appointment.getCustomerEntity().getLastName()), longestName) + " | " + getSimpleDate(appointment.getAppointmentDate()) + " | " + getSimpleTime(appointment.getAppointmentTime()) + " | " + appointment.getAppointmentNo());
+        }
     }
     
     public static void viewServiceProviderTableFormat(List<ServiceProviderEntity> list) {

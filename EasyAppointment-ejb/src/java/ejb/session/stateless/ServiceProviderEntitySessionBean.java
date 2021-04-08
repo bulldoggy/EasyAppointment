@@ -75,8 +75,12 @@ public class ServiceProviderEntitySessionBean implements ServiceProviderEntitySe
     @Override
     public List<ServiceProviderEntity> retrieveAllServiceProvider() {
         Query query = em.createQuery("SELECT s FROM ServiceProviderEntity s");
+        List<ServiceProviderEntity> serviceProviderEntityList = query.getResultList();
+        for (ServiceProviderEntity serviceprovider : serviceProviderEntityList) {
+            serviceprovider.getAppointmentEntity().size();
+        }
         
-        return query.getResultList();
+        return serviceProviderEntityList;
     }
     
     @Override

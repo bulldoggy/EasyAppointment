@@ -59,7 +59,7 @@ public class Startup {
 
     
     public void start() {
-        //initAppointment();
+        initAppointment();
         Scanner sc = new Scanner(System.in);
         Integer response = 0;
         
@@ -348,11 +348,11 @@ public class Startup {
         
         try {
             ServiceProviderEntity SPEntity = serviceProviderEntitySessionBeanRemote.retrieveServiceProviderByUniqueIdNumber(Long.valueOf(1));
-            //CustomerEntity CustEntity = customerEntitySessionBeanRemote.retrieveCustomerById(Long.valueOf(1));
+            CustomerEntity CustEntity = customerEntitySessionBeanRemote.retrieveCustomerById(Long.valueOf(1));
             Long appointmentId = appointmentEntitySessionBeanRemote.createAppointmentEntity(new AppointmentEntity("101011130", myDate, myDate));
             AppointmentEntity ApptEntity = appointmentEntitySessionBeanRemote.retrieveAppointmentById(appointmentId);
 
-            SPEntity.setAppointmentEntity(new ArrayList<AppointmentEntity>());
+            //SPEntity.setAppointmentEntity(new ArrayList<AppointmentEntity>());
             //CustEntity.setAppointmentEntity(new ArrayList<AppointmentEntity>());
 
             //Lazy Fetching for ServiceProviderEntity --- AppointmentEntity
@@ -360,14 +360,14 @@ public class Startup {
             SPEntity.getAppointmentEntity().add(ApptEntity);
 
             //Lazy Fetching for CustomerEntity --- AppointmentEntity
-            //ApptEntity.setCustomerEntity(CustEntity);
-            //CustEntity.getAppointmentEntity().add(ApptEntity);
+            ApptEntity.setCustomerEntity(CustEntity);
+            CustEntity.getAppointmentEntity().add(ApptEntity);
             
-            //customerEntitySessionBeanRemote.updateCustomerEntity(CustEntity);
+            customerEntitySessionBeanRemote.updateCustomerEntity(CustEntity);
             serviceProviderEntitySessionBeanRemote.updateServiceProviderEntity(SPEntity);
             appointmentEntitySessionBeanRemote.updateAppointment(ApptEntity);
 
-        } catch (ServiceProviderNotFoundException | AppointmentNotFoundException ex) {
+        } catch (ServiceProviderNotFoundException | AppointmentNotFoundException | CustomerNotFoundException ex) {
             ex.getMessage();
         }
     }

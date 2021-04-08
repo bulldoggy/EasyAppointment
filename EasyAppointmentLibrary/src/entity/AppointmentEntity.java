@@ -18,10 +18,13 @@ public class AppointmentEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long appointmentId;
     private String appointmentNo;
+    
     @Temporal(TemporalType.DATE)
     private Date appointmentDate;
+    
     @Temporal(TemporalType.TIME)
     private Date appointmentTime;
+    
     @ManyToOne
     private CustomerEntity customerEntity;
     @ManyToOne

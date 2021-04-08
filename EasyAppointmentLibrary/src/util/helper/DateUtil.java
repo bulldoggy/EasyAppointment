@@ -5,6 +5,7 @@
  */
 package util.helper;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -27,5 +28,19 @@ public class DateUtil {
         cal.set(Calendar.MINUTE, minute);
         
         return cal.getTime();
+    }
+    
+    public static String getSimpleDate(Date date) {
+        String format = "dd-MM-yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        String strDate = simpleDateFormat.format(date);
+        return strDate;
+    }
+    
+    public static String getSimpleTime(Date date) {
+        String format = "HH:mm";
+        SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(format);
+        String strTime = simpleTimeFormat.format(date);
+        return strTime;
     }
 }
