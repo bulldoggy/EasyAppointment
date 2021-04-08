@@ -196,7 +196,7 @@ public class Startup {
                     if (response == 2) {
                         try {
                             login(entity);
-                            customerOperationMenu = new CustomerOperationMenu(customerEntity);
+                            customerOperationMenu = new CustomerOperationMenu(customerEntity, serviceProviderEntitySessionBeanRemote, customerEntitySessionBeanRemote,  appointmentEntitySessionBeanRemote, adminEntitySessionBeanRemote);
                             customerOperationMenu.customerOperationMainMenu();
                             System.out.println("Login successful!");
                         } catch (InvalidLoginCredentialException ex) {
