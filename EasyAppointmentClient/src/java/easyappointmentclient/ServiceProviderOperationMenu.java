@@ -1,12 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package easyappointmentclient;
 
+import ejb.session.stateless.AdminEntitySessionBeanRemote;
+import ejb.session.stateless.AppointmentEntitySessionBeanRemote;
+import ejb.session.stateless.CustomerEntitySessionBeanRemote;
 import ejb.session.stateless.ServiceProviderEntitySessionBeanRemote;
 import entity.AppointmentEntity;
+import entity.CustomerEntity;
 import entity.ServiceProviderEntity;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,6 +15,9 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import util.exception.AppointmentNotFoundException;
+import util.exception.CustomerNotFoundException;
+import static util.helper.StringUtil.serviceProviderAppointmentTableFormat;
 
 /**
  *
@@ -25,10 +27,15 @@ public class ServiceProviderOperationMenu {
     
     private ServiceProviderEntity serviceProviderEntity;
     private ServiceProviderEntitySessionBeanRemote serviceProviderEntitySessionBeanRemote;
+    private CustomerEntitySessionBeanRemote customerEntitySessionBeanRemote;
+    private AppointmentEntitySessionBeanRemote appointmentEntitySessionBeanRemote;
+            
 
-    public ServiceProviderOperationMenu(ServiceProviderEntity serviceProviderEntity, ServiceProviderEntitySessionBeanRemote serviceProviderEntitySessionBeanRemote) {
+    public ServiceProviderOperationMenu(ServiceProviderEntity serviceProviderEntity, ServiceProviderEntitySessionBeanRemote serviceProviderEntitySessionBeanRemote, CustomerEntitySessionBeanRemote customerEntitySessionBeanRemote, AppointmentEntitySessionBeanRemote appointmentEntitySessionBeanRemote) {
         this.serviceProviderEntity = serviceProviderEntity;
         this.serviceProviderEntitySessionBeanRemote = serviceProviderEntitySessionBeanRemote;
+        this.customerEntitySessionBeanRemote = customerEntitySessionBeanRemote;
+        this.appointmentEntitySessionBeanRemote = appointmentEntitySessionBeanRemote;
     }
     
     public void serviceProviderMainMenu() {
@@ -59,7 +66,7 @@ public class ServiceProviderOperationMenu {
                 } else if (response == 3) {
                     viewAppointments();
                 } else if (response == 4) {
-
+                    cancelAppointments();
                 } else if (response == 5) {
                     break;
                 } else {
@@ -125,19 +132,62 @@ public class ServiceProviderOperationMenu {
         System.out.println("Your information has been successfully saved!");
     }
     
-    //in-progress
-    public void viewAppointments() {
-        
-        System.out.println("*** Service provider terminal :: View Appointments ***\n");
-        System.out.println(String.format("%-15s", "Name") + "| " +
-                           String.format("%-35s", "Date & Time") + " | " + 
-                           String.format("%-17s", "Appointment No."));
-        
+    public void cancelAppointments() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** Service provider terminal :: Cancel Appointments ***\n");
+        System.out.println("Appointments");
         List<AppointmentEntity> appointments = serviceProviderEntity.getAppointmentEntity();
-        for (AppointmentEntity appointment : appointments) {
-            System.out.println(String.format("%-15s", appointment.getServiceProviderEntity().getName()) + "| " +
-                               String.format("%-35s", appointment.getAppointmentDate()) + " | " +
-                               String.format("%-17s", appointment.getAppointmentNo()));
+        if(appointments.size() <= 0) {
+            System.out.println("There are no appointments to show.");
+        } else {
+            serviceProviderAppointmentTableFormat(appointments);
+        }
+        
+        while(true) {
+            System.out.println("Enter 0 to go back to the previous menu.");
+            System.out.print("Enter Appointment Id>");
+            String appointmentNo = sc.nextLine();
+            if (appointmentNo.equals("0")) {
+                break;
+            }
+            try {
+                AppointmentEntity cancelledAppt = appointmentEntitySessionBeanRemote.retrieveAppointmentByAppointmentNo(appointmentNo);
+                CustomerEntity customerWithAppt = customerEntitySessionBeanRemote.retrieveCustomerById(cancelledAppt.getCustomerEntity().getId());
+                // Remove ServiceProvider --- Appointment relationship
+                cancelledAppt.setServiceProviderEntity(null);
+                serviceProviderEntity.getAppointmentEntity().remove(cancelledAppt);
+
+                // Remove ServiceProvider --- Appointment relationship
+                cancelledAppt.setCustomerEntity(null);
+                customerWithAppt.getAppointmentEntity().remove(cancelledAppt);
+                
+                appointmentEntitySessionBeanRemote.deleteAppointment(cancelledAppt.getAppointmentId());
+
+                System.out.println("Appointment " + appointmentNo + " has been cancelled successfully.");
+            } catch(AppointmentNotFoundException | CustomerNotFoundException ex) {
+                ex.getMessage();
+            }
+        }
+    }
+    
+    public void viewAppointments() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** Service provider terminal :: View Appointments ***\n");
+        System.out.println("Appointments");
+        List<AppointmentEntity> appointments = serviceProviderEntity.getAppointmentEntity();
+        if(appointments.size() <= 0) {
+            System.out.println("There are no appointments to show.");
+        } else {
+            serviceProviderAppointmentTableFormat(appointments);
+        }
+        
+        while(true) {
+            System.out.println("Enter 0 to go back to the previous menu.");
+            System.out.print(">");
+            String exitStr = sc.nextLine();
+            if (exitStr.equals("0")) {
+                break;
+            }
         }
     }
 }

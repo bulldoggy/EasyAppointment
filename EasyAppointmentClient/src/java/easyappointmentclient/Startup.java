@@ -17,7 +17,9 @@ import entity.ServiceProviderEntity;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
+import util.exception.AdminNotFoundException;
 import util.exception.AppointmentNotFoundException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginCredentialException;
@@ -156,7 +158,7 @@ public class Startup {
                     if (response == 2) {
                         try {
                             login(entity);
-                            serviceProviderOperationMenu = new ServiceProviderOperationMenu(serviceProviderEntity, serviceProviderEntitySessionBeanRemote);
+                            serviceProviderOperationMenu = new ServiceProviderOperationMenu(serviceProviderEntity, serviceProviderEntitySessionBeanRemote, customerEntitySessionBeanRemote, appointmentEntitySessionBeanRemote);
                             serviceProviderOperationMenu.serviceProviderMainMenu();
                             System.out.println("Login successful!");
                         } catch (InvalidLoginCredentialException ex) {
@@ -257,39 +259,40 @@ public class Startup {
 
             System.out.print("Enter Name> ");
             String name = sc.nextLine().trim();
-            System.out.println("1 Health | 2 Fashion | 3 Education\n");
-            System.out.print("Enter Business Category> ");
-            int choice = sc.nextInt();
-            String businessCategory = "";
-            sc.nextLine();
-            switch(choice) {
-                case 1:
-                    businessCategory = "Health";
-                    break;
-                case 2:
-                    businessCategory = "Fashion";
-                    break;
-                case 3:
-                    businessCategory = "Education";
-                    break;
-            }
-            System.out.print("Enter Business Registration Number> ");
-            String businessRegNumber = sc.nextLine().trim();
-            System.out.print("Enter City> ");
-            String city = sc.nextLine().trim();
-            System.out.print("Enter Phone> ");
-            String phone = sc.nextLine().trim(); 
-            System.out.print("Enter Business Address> ");
-            String address = sc.nextLine().trim();    
-            System.out.print("Enter Email> ");
-            String email = sc.nextLine().trim();
-            System.out.print("Enter Password> ");
-            String password = sc.nextLine().trim();
+            try { 
+                List<String> categoryList = adminEntitySessionBeanRemote.retrieveAdminById(Long.valueOf(1)).getBusinessCategory();
+                 for(int i = 0; i < categoryList.size(); i++) {
+                    System.out.print((i + 1) + " " + categoryList.get(i));
+                    if(i < categoryList.size() - 1) {
+                        System.out.print(" | ");
+                    }
+                }
+                System.out.println();
+                System.out.print("Enter Business Category> ");
+                int choice = sc.nextInt();
+                String businessCategory = categoryList.get(choice);
+                sc.nextLine();
+                System.out.print("Enter Business Registration Number> ");
+                String businessRegNumber = sc.nextLine().trim();
+                System.out.print("Enter City> ");
+                String city = sc.nextLine().trim();
+                System.out.print("Enter Phone> ");
+                String phone = sc.nextLine().trim(); 
+                System.out.print("Enter Business Address> ");
+                String address = sc.nextLine().trim();    
+                System.out.print("Enter Email> ");
+                String email = sc.nextLine().trim();
+                System.out.print("Enter Password> ");
+                String password = sc.nextLine().trim();
 
-            Long uniqueIdNumber = serviceProviderEntitySessionBeanRemote.createServiceProviderEntity(new ServiceProviderEntity(businessRegNumber, businessCategory, name, address, city, email, phone, password));
-            System.out.print("You have been registered successfully! ID: " + uniqueIdNumber+"\n");
+                Long uniqueIdNumber = serviceProviderEntitySessionBeanRemote.createServiceProviderEntity(new ServiceProviderEntity(businessRegNumber, businessCategory, name, address, city, email, phone, password));
+                System.out.print("You have been registered successfully! ID: " + uniqueIdNumber+"\n");
+            } catch(AdminNotFoundException ex) {
+                ex.getMessage();
+            }
+
             System.out.print("Enter 0 to go back to the previous menu.\n");
-            
+            System.out.print(">");
             int exitNumber = -1;
             while(exitNumber != 0) {
                 exitNumber = sc.nextInt();
@@ -342,9 +345,9 @@ public class Startup {
         }
     }
     
-    public void initAppointment() {
+    public void initAppointment(){
         
-        Date myDate = new DateUtil().getDate(2021, 1, 1, 11, 30);
+        Date myDate = new DateUtil().getDate(2022, 10, 15, 11, 30);
         
         try {
             ServiceProviderEntity SPEntity = serviceProviderEntitySessionBeanRemote.retrieveServiceProviderByUniqueIdNumber(Long.valueOf(1));

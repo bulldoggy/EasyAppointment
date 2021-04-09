@@ -9,6 +9,7 @@ import entity.AppointmentEntity;
 import entity.CustomerEntity;
 import entity.ServiceProviderEntity;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -51,7 +52,7 @@ public class DataInitSessionBean {
     
     private void initializeData()
     {  
-        adminEntitySessionBeanLocal.createAdminEntity(new AdminEntity("admin@easyadm.com", "password", new ArrayList<String>()));
+        adminEntitySessionBeanLocal.createAdminEntity(new AdminEntity("admin@easyadm.com", "password", new ArrayList<String>(Arrays.asList("Health", "Fashion", "Education"))));
         
         serviceProviderEntitySessionBeanLocal.createServiceProviderEntity(new ServiceProviderEntity("A1101", "Restaurant", "John's Special", "Airport Road, Avenue 6", "Singapore", "john@easysp.com", "91234567", "password"));
 
